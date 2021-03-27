@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+        import { OBJLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/OBJLoader.js';
+        import { MTLLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/MTLLoader.js'
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+        const frontLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100, 75%)'), 1.0);
+        frontLight.position.set(-100, 0, 100);
+        const fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100, 75%)'), 0.75);
+        fillLight.position.set(100, 0, -100);
+        const backLight = new THREE.DirectionalLight(new THREE.Color(0xffffff), 1.0);
+        backLight.position.set(100, 0, -100).normalize();
+
+        scene.add(frontLight);
+        scene.add(fillLight);
+        scene.add(backLight);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const materialLoader = new MTLLoader();
+        materialLoader.setPath('/models/');
+        materialLoader.load('Bike_remake.mtl', (materials) => {
+            const objLoader = new OBJLoader();
+            objLoader.setPath('/models/');
+            objLoader.materials = materials;
+            objLoader.load('Bike_remake.obj', (obj) => {
+                scene.add(obj);
+            });
+
+        });
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = false;
+        controls.capingFactor = 0.25;
+        controls.enableZoom = true;
+
+        camera.position.z = 5;
+        let animate = () => {
+            requestAnimationFrame(animate);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
